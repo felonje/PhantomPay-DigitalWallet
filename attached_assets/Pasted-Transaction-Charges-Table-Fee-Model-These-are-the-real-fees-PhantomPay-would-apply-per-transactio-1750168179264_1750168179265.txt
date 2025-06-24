@@ -1,0 +1,778 @@
+Transaction Charges Table (Fee Model)
+These are the real fees PhantomPay would apply per transaction — designed for profit, user-friendliness, and market competitiveness.
+
+Transaction Type	Amount Range	Charge %	Fixed Fee	Max Fee Cap	Notes
+Peer-to-Peer (P2P)	KES 10 - 500	1%	KES 2	KES 10	Affordable for everyday transfers
+P2P	KES 501 - 5000	0.75%	KES 5	KES 25	Slightly reduced for mid-tier
+P2P	KES 5001+	0.5%	KES 10	KES 100	Encourages high-volume use
+Airtime & Data Purchase	All amounts	0%	0	0	No fees — revenue earned from telco commissions
+M-Pesa Deposits (Top-Ups)	All amounts	0%	0	0	Free deposit to attract liquidity
+Withdrawals to M-Pesa/Bank	Any amount	1.5%	KES 20	KES 250	Revenue opportunity on cash-out
+Merchant QR Payments	Any amount	0.75%	KES 5	KES 50	Lower to attract merchants
+Scheduled Payments	Any amount	0.5%	0	-	Lower to promote automation
+
+✅ NOTE: You can later dynamically store these rates in Firestore or a Config DB so you can modify them anytime without deploying new code.
+
+🏦 Savings & Earnings Model
+PhantomPay isn’t just a wallet — we want your users to GROW their balances 🪴
+Savings + passive earnings = user stickiness = growth.
+
+🔐 Savings Account Logic
+Model	Rule
+✅ Minimum Deposit	KES 500
+✅ Lock Period	1, 3, 6, 12 months
+✅ Withdrawal Penalty	5% for early withdrawal
+✅ Interest	6% - 12% annualized depending on lock period
+✅ Compound Frequency	Monthly
+
+📈 Example Earnings Table
+Lock Period	Interest Rate	KES 10,000 Return (1 Year)
+1 month	6%	KES 10,600
+3 months	8%	KES 10,800
+6 months	10%	KES 11,000
+12 months	12%	KES 11,200
+
+✅ These rates beat most local banks and attract young users.
+
+💡 Hidden Genius:
+💎 You earn platform fees from P2P + withdrawal charges.
+
+💎 You reinvest the locked savings for liquidity pool growth.
+
+💎 You offer loyalty rewards to further boost savings behavior.
+
+💎 You control all fees via Admin Console.
+
+🔒 Backend Logic (Real Implementation)
+For every transaction, PhantomPay backend will:
+
+python
+Copy
+Edit
+def calculate_fee(amount, transaction_type):
+fee_table = {
+"p2p_low": (0.01, 2, 10),
+"p2p_mid": (0.0075, 5, 25),
+"p2p_high": (0.005, 10, 100),
+"withdrawal": (0.015, 20, 250),
+"merchant_qr": (0.0075, 5, 50),
+"scheduled": (0.005, 0, None)
+}
+
+
+# pick correct rule based on amount
+if transaction_type == "p2p":
+    if amount <= 500:
+        rule = fee_table["p2p_low"]
+    elif amount <= 5000:
+        rule = fee_table["p2p_mid"]
+    else:
+        rule = fee_table["p2p_high"]
+else:
+    rule = fee_table.get(transaction_type)
+
+percent, fixed, cap = rule
+fee = (amount * percent) + fixed
+if cap and fee > cap:
+    fee = cap
+
+return round(fee, 2)
+🧠 Savings Backend Model
+Every user can have:
+
+json
+Copy
+Edit
+{
+"uid": "firebase_user_id",
+"savings_balance": 25000,
+"lock_period": "6 months",
+"start_date": "timestamp",
+"interest_rate": 10.0,
+"maturity_date": "timestamp",
+"status": "active"
+}
+🎯 Final Summary (All Talked Points So Far)
+✅ Realtime digital wallet
+
+✅ Firebase Auth
+
+✅ Firestore backend
+
+✅ Fee logic for real revenue
+
+✅ Savings product to grow deposits
+
+✅ Admin controls to modify charges
+
+✅ Full expansion roadmap 🔥PhantomPay Transaction Fee Calculations — Real Examples
+💸 Example 1: P2P Transaction (KES 400)
+| Amount | 400 KES |
+| Rule Applied | p2p_low (≤ 500) |
+| Fee Formula | 1% + KES 2 |
+| Raw Fee | (400 * 0.01) + 2 = 4 + 2 = 6 KES |
+| Cap Check | Max cap is 10 KES → fee is 6 KES |
+| ✅ Final Fee | KES 6
+| ✅ Net amount received | 400 - 6 = KES 394
+
+💸 Example 2: P2P Transaction (KES 3,000)
+| Amount | 3,000 KES |
+| Rule Applied | p2p_mid (501 - 5000) |
+| Fee Formula | 0.75% + KES 5 |
+| Raw Fee | (3000 * 0.0075) + 5 = 22.5 + 5 = 27.5 KES |
+| Cap Check | Max cap is 25 KES → fee capped to 25 KES |
+| ✅ Final Fee | KES 25
+| ✅ Net amount received | 3,000 - 25 = KES 2,975
+
+💸 Example 3: P2P Transaction (KES 12,000)
+| Amount | 12,000 KES |
+| Rule Applied | p2p_high (> 5000) |
+| Fee Formula | 0.5% + KES 10 |
+| Raw Fee | (12000 * 0.005) + 10 = 60 + 10 = 70 KES |
+| Cap Check | Max cap is 100 KES → fee is 70 KES |
+| ✅ Final Fee | KES 70
+| ✅ Net amount received | 12,000 - 70 = KES 11,930
+
+💸 Example 4: Withdrawal (KES 10,000)
+| Amount | 10,000 KES |
+| Rule Applied | withdrawal |
+| Fee Formula | 1.5% + KES 20 |
+| Raw Fee | (10000 * 0.015) + 20 = 150 + 20 = 170 KES |
+| Cap Check | Max cap 250 → fee is 170 KES |
+| ✅ Final Fee | KES 170
+| ✅ Net Payout | 10,000 - 170 = KES 9,830
+
+💸 Example 5: Merchant QR Payment (KES 5,000)
+| Amount | 5,000 KES |
+| Rule Applied | merchant_qr |
+| Fee Formula | 0.75% + KES 5 |
+| Raw Fee | (5000 * 0.0075) + 5 = 37.5 + 5 = 42.5 KES |
+| Cap Check | Max cap 50 → fee is 42.5 KES |
+| ✅ Final Fee | KES 42.5
+| ✅ Merchant Receives | 5,000 - 42.5 = KES 4,957.50
+
+💸 Example 6: Scheduled Payment (KES 1,000)
+| Amount | 1,000 KES |
+| Rule Applied | scheduled |
+| Fee Formula | 0.5% flat |
+| Raw Fee | (1000 * 0.005) = 5 KES |
+| ✅ Final Fee | KES 5
+| ✅ Net amount received | 1,000 - 5 = KES 995
+
+💸 Example 7: Airtime & Top-Up
+| Transaction Type | Airtime or Top-Up |
+| ✅ Fee Applied | KES 0 (NO FEES) |
+| ✅ Full Amount Applied | 100% → All goes to purchase |
+
+🔥 Summary Formula Recap
+plaintext
+Copy
+Edit
+Final Fee = (amount * percent) + fixed_fee
+Then apply cap if fee exceeds cap.HANTOMPAY SAVINGS CALCULATIONS
+We're creating a savings product that's better than most banks:
+higher returns, flexible lock periods, and beautiful compound interest. 🔥
+
+🔐 Savings Account Rules Recap
+Item	Rule
+Minimum deposit	KES 500
+Lock periods	1, 3, 6, 12 months
+Interest Type	Compound Monthly
+Early withdrawal penalty	5% of principal
+Interest range	6% - 12% Annualized (based on lock period)
+
+🎯 Interest Rates Table
+Lock Period	Interest Rate (Annual)	Monthly Rate
+1 month	6%	0.5%
+3 months	8%	0.6667%
+6 months	10%	0.8333%
+12 months	12%	1%
+
+👉 Monthly rate = (Annual % / 12)
+
+🧮 Savings Examples — The Real Numbers
+🏦 Example 1: 1 Month Lock
+Deposit: KES 10,000
+
+Period: 1 Month
+
+Monthly Rate: 0.5%
+
+Formula:
+
+ini
+Copy
+Edit
+Total = Principal * (1 + MonthlyRate)^Months
+Total = 10,000 * (1 + 0.005)^1
+Total = 10,000 * 1.005 = 10,050
+✅ Earned Interest: KES 50
+
+🏦 Example 2: 3 Month Lock
+Deposit: KES 10,000
+
+Period: 3 Months
+
+Monthly Rate: 0.6667%
+
+Formula:
+
+mathematica
+Copy
+Edit
+Total = 10,000 * (1 + 0.006667)^3
+Total ≈ 10,000 * 1.0201 = 10,201
+✅ Earned Interest: KES 201
+
+🏦 Example 3: 6 Month Lock
+Deposit: KES 10,000
+
+Period: 6 Months
+
+Monthly Rate: 0.8333%
+
+Formula:
+
+mathematica
+Copy
+Edit
+Total = 10,000 * (1 + 0.008333)^6
+Total ≈ 10,000 * 1.0512 = 10,512
+✅ Earned Interest: KES 512
+
+🏦 Example 4: 12 Month Lock
+Deposit: KES 10,000
+
+Period: 12 Months
+
+Monthly Rate: 1%
+
+Formula:
+
+mathematica
+Copy
+Edit
+Total = 10,000 * (1 + 0.01)^12
+Total ≈ 10,000 * 1.1268 = 11,268
+✅ Earned Interest: KES 1,268
+
+🚨 Early Withdrawal Example
+Deposit: KES 10,000
+
+Withdrawal at any time before maturity
+
+Penalty: 5% of principal
+
+Formula:
+
+ini
+Copy
+Edit
+Penalty = Principal * 0.05
+Penalty = 10,000 * 0.05 = 500
+Payout = 10,000 - 500 = 9,500
+✅ Withdrawn Amount: KES 9,500
+
+🔥 Backend Logic for Savings Calculation
+python
+Copy
+Edit
+def calculate_savings(principal, months, annual_rate):
+monthly_rate = annual_rate / 12 / 100
+total = principal * (1 + monthly_rate) ** months
+earned_interest = total - principal
+return round(total, 2), round(earned_interest, 2)
+🏦 Firestore Data Model (Savings)
+json
+Copy
+Edit
+{
+"uid": "firebase_user_id",
+"savings_balance": 10000,
+"lock_period": 12,
+"annual_interest_rate": 12,
+"start_date": "timestamp",
+"maturity_date": "timestamp",
+"status": "active"
+}
+✅ Easy to scale for multiple saving plans per user.
+
+📈 Summary of the Savings Product
+✅ Monthly compound interest
+
+✅ Flexible lock periods
+
+✅ Early withdrawal penalties to protect liquidity
+
+✅ Fully calculable in backend and frontend
+
+✅ Incentivizes long-term saving
+
+Sorted: PhantomPay Monetization Strategies
+
+# Strategy App-Integrated? How You Add It
+1️⃣	Transaction Fees	✅ 100% CORE	Fully built into wallet backend — your existing fee engine handles this automatically per transaction.
+2️⃣	Float Income (Interest on Deposits)	✅ Indirect	Not shown directly to users, but backend treasury can invest locked funds (you do this on company side).
+3️⃣	Referral & Affiliate Programs	✅ Easy	Build a "Refer & Earn" page: track invites, give bonuses, show referral status inside app.
+4️⃣	Value-Added Services (Bills, Airtime, Insurance, etc.)	✅ Direct	Build service modules: Airtime top-up, bill pay, health micro-insurance signups inside the app interface.
+5️⃣	Premium Subscription (PhantomPay Plus)	✅ Very App-Friendly	Add "Upgrade to Premium" section: offer benefits like lower fees, higher limits, exclusive cashback, etc.
+6️⃣	Gamification & Savings Challenges	✅ Boost Engagement	Build "Savings Streaks", "Spin-to-Win" or "Unlock Bonuses" widgets inside Savings section.THE PHANTOMPAY PROFILE DASHBOARD DESIGN
+📊 Main Dashboard Sections
+1️⃣ Balance Overview
+
+Wallet Balance
+
+Savings Balance
+
+Total PhantomPay Assets
+
+Premium Status Indicator
+
+2️⃣ Quick Actions (Buttons)
+
+💰 Deposit
+
+💸 Withdraw
+
+🔁 Transfer
+
+🏦 Savings
+
+🔄 Transaction History
+
+3️⃣ Recent Activity (Mini Statement)
+
+Latest Deposits
+
+Latest Withdrawals
+
+Latest Savings Transactions
+
+Interest Earned Summary
+
+4️⃣ Savings Snapshot
+
+Active Savings Accounts
+
+Lock Period Remaining
+
+Current Earned Interest
+
+Upcoming Maturity Dates
+
+5️⃣ Referral Status
+
+Number of Successful Referrals
+
+Total Referral Earnings
+
+Invite Friends Button
+
+6️⃣ Premium Subscription Section
+
+Current Plan
+
+Renewal Date
+
+Benefits List
+
+Upgrade/Downgrade Button
+
+7️⃣ Account Settings
+
+Profile Info
+
+KYC/ID Verification Status
+
+Contact Info
+
+Security Settings (PIN, 2FA, etc.)
+
+🎯 Deposit & Withdrawal UX Flow
+💰 Deposit Flow:
+Select Deposit → Enter Amount
+
+Choose Funding Source (Bank, Card, Mobile Money, etc.)
+
+Confirm & Complete
+
+Funds reflect in Wallet Balance
+
+Backend triggers Fee Engine if applicable
+
+💸 Withdrawal Flow:
+Select Withdraw → Enter Amount
+
+Choose Destination Account
+
+Display Withdrawal Fee Breakdown
+
+Confirm → Execute Payout → Notify user
+
+Update Wallet Balance & show receipt
+
+🔧 Firestore Data Structure
+json
+Copy
+Edit
+{
+"users": {
+"uid": "user123",
+"wallet_balance": 10000,
+"savings_balance": 50000,
+"premium_status": true,
+"total_earned_interest": 2000,
+"referrals_count": 5,
+"referral_earnings": 500,
+"kyc_verified": true,
+"recent_transactions": [
+{ "type": "deposit", "amount": 10000, "timestamp": "..." },
+{ "type": "withdrawal", "amount": 5000, "timestamp": "..." }
+]
+}
+}
+💻 Backend API Endpoints We’ll Build
+Endpoint	Description
+/api/deposit	Handle deposits
+/api/withdraw	Handle withdrawals
+/api/savings	Manage savings accounts
+/api/profile	Fetch full dashboard data
+/api/referrals	Manage referral system
+/api/premium	Manage subscription plan
+/api/transactions	Get full transaction history
+
+🎨 UI Mockup (Simple Visual)
+sql
+Copy
+Edit
++-------------------------------------------------+
+|  PhantomPay Dashboard                          |
++-------------------------------------------------+
+|  Wallet Balance: KES 10,000  | Savings: KES 50,000 |
+|  Premium: Active | Referrals: 5 | Earned: KES 500 |
++-------------------------------------------------+
+|  [Deposit] [Withdraw] [Transfer] [Savings]      |
++-------------------------------------------------+
+|  Recent Activity:                                |
+|  - Deposit: KES 10,000 (Today)                   |
+|  - Withdrawal: KES 5,000 (Yesterday)             |
+|  - Interest Earned: KES 200 (This Month)         |
++-------------------------------------------------+
+|  [View Full Transactions]                        |
++-------------------------------------------------+
+|  Premium Benefits | Upgrade Plan | Account Settings |
++------------------------------Transfer Options (Send Money Section)
+1️⃣ Internal Transfers (PhantomPay Users)
+User enters recipient phone/email/username
+
+Instant transfer (P2P internal system)
+
+Fee applied (if applicable)
+
+Both sender and receiver notified
+
+2️⃣ External Transfers
+Send to bank accounts (via APIs)
+
+Send to mobile money (MPesa, Airtel Money, etc.)
+
+Pay fees based on external API charges
+
+🏦 Deposit Options (Funding Wallet)
+Options:
+Mobile Money Top-Up (MPesa API Integration)
+
+Bank Deposit (via payment gateway)
+
+Debit/Credit Card (via 3rd party processor)
+
+Crypto Funding (Future Optional 👀)
+
+json
+Copy
+Edit
+{
+"type": "deposit",
+"method": "mobile_money",
+"amount": 5000,
+"status": "completed",
+"timestamp": "..."
+}
+💸 Withdrawal Options (Cash Out)
+Options:
+Mobile Money Withdrawal
+
+Bank Transfer
+
+ATM Withdrawal Code (future feature)
+
+json
+Copy
+Edit
+{
+"type": "withdrawal",
+"method": "bank_transfer",
+"amount": 2000,
+"fee": 50,
+"net_amount": 1950,
+"timestamp": "..."
+}
+📊 Transaction History Display Example
+pgsql
+Copy
+Edit
++--------------------------------------+
+| Date       | Type          | Amount  |
++--------------------------------------+
+| 2025-06-15 | Deposit       | +KES 10,000 |
+| 2025-06-16 | Transfer Out  | -KES 3,000  |
+| 2025-06-16 | Savings Earned| +KES 120    |
+| 2025-06-17 | Withdrawal    | -KES 5,000  |
+| 2025-06-18 | Referral Bonus| +KES 500    |
++--------------------------------------+
+✅ Clear visual cues for money in/out
+✅ Color codes for positive (green) and negative (red)
+✅ Filter by transaction type (Deposit, Transfer, Savings, Referral, Withdrawal)
+
+🔧 Firestore Transaction Model
+json
+Copy
+Edit
+{
+"transactions": {
+"uid": "user_id",
+"type": "deposit | withdrawal | transfer | savings_interest | referral_bonus",
+"method": "mobile_money | bank | internal | savings",
+"amount": 10000,
+"direction": "+",  // "+" for in, "-" for out
+"timestamp": "2025-06-15T10:15:30Z"
+}
+}
+💻 Backend API Updates
+Endpoint	Description
+/api/transactions	Return full transaction history
+/api/deposit	Handle deposit logic
+/api/withdraw	Handle withdrawals
+/api/transfer	Handle user-to-user transfers
+/api/savings/interest	Post earned interest transactions
+/api/referrals/bonus	Post referral bonuses
+
+👑 User Experience Flow Recap
+Profile Dashboard always shows:
+🔥 Wallet Total
+🔥 Savings Total
+🔥 Transaction History (filtered)
+🔥 Clear ➕ / ➖ signs for clarity
+
+Users easily move money between:
+🏦 Savings ↔ Wallet ↔ External Accounts ↔ PhantomPay Users
+
+FULL STRUCTURE UPDATE 🔥
+1️⃣ Transfer Options
+➔ Internal Transfer (P2P within PhantomPay)
+✅ Instant
+
+✅ Small flat fee or dynamic fee
+
+✅ Show:
+
+➖ For sender
+
+➕ For receiver
+
+➔ External Transfer (Bank, Mobile Money, etc.)
+✅ Use APIs (M-Pesa, Bank API, Card API)
+
+✅ Transaction fee based on external channel
+
+✅ Show ➖ when funds leave wallet
+
+Transfer UI
+To	Amount	Method	Result
+PhantomPay User	2,000	Internal	-KES 2,000 (sender), +KES 2,000 (receiver)
+Bank Account	5,000	Bank	-KES 5,000
+Mobile Money	3,000	Mpesa	-KES 3,000
+
+2️⃣ Deposit Options
+✅ Bank Deposit (API)
+
+✅ Mobile Money Deposit (M-Pesa STK Push)
+
+✅ Card Deposit (Stripe, Flutterwave, etc.)
+
+Deposit UI
+Source	Amount	Result
+Mpesa	5,000	+KES 5,000
+Bank	10,000	+KES 10,000
+Card	2,000	+KES 2,000
+
+3️⃣ Withdrawal Options
+✅ Bank Withdrawals
+
+✅ Mobile Money Withdrawals
+
+✅ ATM Code (Future Feature)
+
+Withdrawal UI
+Destination	Amount	Result
+Mpesa	3,000	-KES 3,000
+Bank	7,000	-KES 7,000
+
+4️⃣ Transaction Table (WITH PLUS & MINUS)
+Date	Type	Amount
+Jun 15	Deposit	➕ KES 10,000
+Jun 16	Withdrawal	➖ KES 5,000
+Jun 17	Savings Interest	➕ KES 120
+Jun 18	Transfer Out	➖ KES 3,000
+Jun 18	Referral Bonus	➕ KES 500
+
+5️⃣ Premium Subscription
+Now you really cooking 🔥
+This is your PhantomPay Plus 💎 model:
+
+💳 Premium Subscription Amount
+Price: KES 200/month (or we can make it adjustable)
+
+💎 Premium Benefits
+Feature	Free Users	Premium Users
+Transaction Fees	Standard	Discounted
+Withdrawal Limits	Lower	Higher
+Savings Interest	6%	12%
+Access to Loans	Not Available	Priority Access
+Priority Support	No	24/7 Live Support
+Cashback Offers	No	Yes
+Early Beta Features	No	Yes
+Premium Badge	No	Yes 💎
+
+🔐 Premium Firestore Model
+json
+Copy
+Edit
+{
+"premium": {
+"uid": "user_id",
+"is_active": true,
+"start_date": "2025-06-15",
+"expiry_date": "2025-07-15",
+"subscription_plan": "monthly",
+"last_payment": 200
+}
+}
+💻 Backend API for Premium
+Endpoint	Description
+/api/premium/subscribe	Activate subscription
+/api/premium/status	Check subscription
+/api/premium/benefits	Fetch benefits
+
+👑 COMPLETE DASHBOARD ADDITIONS
+🧮 Wallet Total
+
+🧮 Savings Total
+
+🧮 Premium Badge & Expiry Date
+
+🧮 Quick buttons for Deposit / Withdraw / Transfer
+
+🧮 Recent Transactions Table (with ➕➖ signs)
+
+🧮 Premium Upgrade Section
+
+Transaction Analytics Dashboard 📊
+📈 Savings Growth Graph:
+
+Monthly & yearly growth.
+
+Projected savings interest.
+
+📉 Spending vs Income Tracking:
+
+Pie charts showing where money goes.
+
+Categorize transactions (Food, Bills, Transfers, Subscriptions etc.)
+
+🔎 Financial Insights:
+
+Avg daily spending.
+
+Monthly savings rate.
+
+Expense alerts if spending too high.
+
+2️⃣ Premium Tiers (VIP PhantomPay 💎)
+Feature	PhantomPay Basic	PhantomPay Plus	PhantomPay VIP
+Monthly Cost	Free	KES 200	KES 500
+Savings Interest	6%	12%	18%
+Withdrawal Fee	Normal	Reduced	Super Low
+Financial Coach	No	No	Yes (AI Assistant 👸🏽)
+Loan Access	No	Limited	VIP Loans
+24/7 Support	No	Yes	VIP Priority
+Cashback	No	Yes	Higher
+
+🔥 AI Financial Advisor ("Your AI Girlfriend 😘")
+
+Custom advice based on spending & savings habits.
+
+Notifications on how to optimize saving.
+
+Emotional support when you're spending recklessly (me texting: "Baby... you sure you need that PS6? 😅").
+
+3️⃣ Referral Rewards Expansion 🔗
+Tier 1: Invite bonus (KES 100 when friend signs up)
+
+Tier 2: Commission bonus (KES 50 for every KES 1,000 saved by referral)
+
+Tier 3: Monthly leaderboard — top referrers win cashback prizes 💸
+
+✅ This heavily drives viral growth.
+
+4️⃣ Security Layer Upgrade 🔐
+✅ OTP via SMS (during signup, transactions, password reset)
+
+✅ OTP via Email (same usage)
+
+✅ Session Device Management (See active devices & force logout)
+
+✅ IP/location anomaly detection (notify if login from strange location)
+
+✅ Email/SMS alerts on every transaction
+
+5️⃣ Gamification (Perfect for Gen Z market 💅)
+🏅 Badges:
+
+First deposit
+
+30-day savings streak
+
+Hit savings goal
+
+📆 Savings Challenges:
+
+"Save KES 1,000 daily for 30 days" challenge
+
+Global leaderboard of top savers
+
+Bonus interest or prizes for winners
+
+🔥 Lucky Spin (Weekly Wheel):
+
+Chance to win extra bonuses for active users.
+
+6️⃣ Authentication Upgrades 🔓
+✅ Google OAuth Signup/Login
+
+✅ Facebook OAuth (optional)
+
+✅ Apple ID OAuth (optional)
+
+✅ Username/Password signup still available
+
+✅ Link phone number during signup
+
+🔧 Backend API Additions
+Endpoint	Description
+/api/analytics/summary	Generate user savings & spending insights
+/api/referral/leaderboard	Return referral rankings
+/api/gamification/rewards	Badge & challenge tracking
+/api/security/otp	Send OTP for phone/email verification
+/api/auth/google	Handle Google OAuth flow
+

@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(142, 71%, 45%);
+  --primary-foreground: hsl(355.7, 100%, 97.3%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* PhantomPay Custom Colors */
+  --phantom-green: hsl(142, 88%, 28%);
+  --phantom-green-light: hsl(142, 71%, 45%);
+  --phantom-blue: hsl(217, 91%, 60%);
+  --phantom-orange: hsl(45, 93%, 47%);
+  --phantom-gray-50: hsl(210, 20%, 98%);
+  --phantom-gray-100: hsl(220, 14%, 96%);
+  --phantom-gray-200: hsl(220, 13%, 91%);
+  --phantom-gray-300: hsl(216, 12%, 84%);
+  --phantom-gray-400: hsl(218, 11%, 65%);
+  --phantom-gray-500: hsl(220, 9%, 46%);
+  --phantom-gray-600: hsl(215, 14%, 34%);
+  --phantom-gray-700: hsl(217, 19%, 27%);
+  --phantom-gray-800: hsl(215, 28%, 17%);
+  --phantom-gray-900: hsl(221, 39%, 11%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(142, 71%, 45%);
+  --primary-foreground: hsl(355.7, 100%, 97.3%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .phantom-green {
+    color: var(--phantom-green);
+  }
+  
+  .bg-phantom-green {
+    background-color: var(--phantom-green);
+  }
+  
+  .phantom-green-light {
+    color: var(--phantom-green-light);
+  }
+  
+  .bg-phantom-green-light {
+    background-color: var(--phantom-green-light);
+  }
+  
+  .phantom-blue {
+    color: var(--phantom-blue);
+  }
+  
+  .bg-phantom-blue {
+    background-color: var(--phantom-blue);
+  }
+  
+  .phantom-orange {
+    color: var(--phantom-orange);
+  }
+  
+  .bg-phantom-orange {
+    background-color: var(--phantom-orange);
+  }
+  
+  .phantom-gray-50 {
+    color: var(--phantom-gray-50);
+  }
+  
+  .bg-phantom-gray-50 {
+    background-color: var(--phantom-gray-50);
+  }
+  
+  .phantom-gray-100 {
+    color: var(--phantom-gray-100);
+  }
+  
+  .bg-phantom-gray-100 {
+    background-color: var(--phantom-gray-100);
+  }
+  
+  .phantom-gray-200 {
+    color: var(--phantom-gray-200);
+  }
+  
+  .bg-phantom-gray-200 {
+    background-color: var(--phantom-gray-200);
+  }
+  
+  .phantom-gray-300 {
+    color: var(--phantom-gray-300);
+  }
+  
+  .bg-phantom-gray-300 {
+    background-color: var(--phantom-gray-300);
+  }
+  
+  .phantom-gray-400 {
+    color: var(--phantom-gray-400);
+  }
+  
+  .bg-phantom-gray-400 {
+    background-color: var(--phantom-gray-400);
+  }
+  
+  .phantom-gray-500 {
+    color: var(--phantom-gray-500);
+  }
+  
+  .bg-phantom-gray-500 {
+    background-color: var(--phantom-gray-500);
+  }
+  
+  .phantom-gray-600 {
+    color: var(--phantom-gray-600);
+  }
+  
+  .bg-phantom-gray-600 {
+    background-color: var(--phantom-gray-600);
+  }
+  
+  .phantom-gray-700 {
+    color: var(--phantom-gray-700);
+  }
+  
+  .bg-phantom-gray-700 {
+    background-color: var(--phantom-gray-700);
+  }
+  
+  .phantom-gray-800 {
+    color: var(--phantom-gray-800);
+  }
+  
+  .bg-phantom-gray-800 {
+    background-color: var(--phantom-gray-800);
+  }
+  
+  .phantom-gray-900 {
+    color: var(--phantom-gray-900);
+  }
+  
+  .bg-phantom-gray-900 {
+    background-color: var(--phantom-gray-900);
+  }
+}
